@@ -390,7 +390,7 @@ for(n in N){
   names(benchmark_distributions)[i] <- paste0("Claw_N_", n)
 }
 
-
+benchmark_distributions = 
 # save list as RData object
 #saveRDS(benchmark_distributions, "benchmark_distributions.RData")
 
@@ -406,7 +406,7 @@ for(n in N){
 #-----------------------
 
 # Plot all distributions ---
-#pdf("benchmark_distributions/benchmark_distributions.pdf", width=12, height = 8)
+#pdf("benchmark_distributions.pdf", width=12, height = 8)
 #par(mfrow=c(2,4))
 #for(n in 1:length(benchmark_distributions)){
 #  barplot(table(benchmark_distributions[[n]]), main = names(benchmark_distributions)[n], cex.main=1)
