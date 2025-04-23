@@ -8,14 +8,14 @@ C <- c(5,10)
 
 # DISTRIBUTIONS TO TEST ---
 #
-#  UNIFORM
+# UNIFORM
 #
 # UNIMODAL 
 #   Gaussian
-#   beta(2,8) -> right skewed
-#   beta(4,4) -> almost Gaussian
-#   beta(100,100) -> peak in middle 
-#   Special case 13
+#   beta(2,8) 
+#   beta(4,4) 
+#   beta(100,100) 
+#   Special case: staircase
 #
 # BIMODAL 
 #   Mixture of 2 Gaussians (same weight), small overlap
@@ -25,9 +25,9 @@ C <- c(5,10)
 #   Mixture of 2 Gaussians (weights 90-10)
 #   Mixture of 2 Gaussians (same weight), large overlap
 #   beta(0.5, 0.5)
-#   Special case 10 
-#   Special case 11
-#   Special case 11 (different weight)
+#   Special case: valley 
+#   Special case: small local mode
+#   Special case: small local mode weighed 
 #
 # Trimodal 
 #   Mixture of 3 Gaussians (same weight)
@@ -53,8 +53,8 @@ for(n in N){
 }
 
 
-
 # GENERATE UNIMODAL DISTRIBUTIONS -----------
+
 # simulate Gaussian
 i = 8
 for(n in N){
@@ -88,35 +88,34 @@ for(k in 1:length(betas_unimodal)){
   }
 }
 
-# add special case 13
+# add special case: stair case distribution
 i = 40
 for(n in N){
   for(c in C){
     set.seed(1)
     i=i+1
-    if(c == 5) prob=seq(0.2:1, by = 0.2) else prob=seq(0.1:1, by = 0.1)
+    if(c == 5) prob <- seq(0.1, 0.3, by = 0.05) else prob <- (seq(1, 10, by = 1) / 55)
     dist <- rep(1:length(prob), times=prob*n)
     dist <- factor(dist, levels=1:c)
     benchmark_distributions[[i]] <- dist
-    names(benchmark_distributions)[i] <- paste0("Unimodal_Special_case_13_N_", n,"_C_",c) # TODO: change name
+    names(benchmark_distributions)[i] <- paste0("Unimodal_Special_Staircase_N_", n,"_C_",c) # TODO: change name
   }
 }
 
 
-
 # GENERATE BIMODAL DISTRIBUTIONS ----------------
-# simulate mixture of 2 Gaussians (small overlap)
+
+# simulate mixture of 2 Gaussians (small overlap) - equally weighted
 i = 48
 for(n in N){
   for(c in C){
     set.seed(1)
     i = i+1
-    # means and SD for scale 0-1
-    mu1 = 0.2; mu2 = 0.8; sd = 0.2/1.645
-    # simulate and merge 2 Gaussians
-    dist1 <- rnorm(n/2, mu1, sd)
-    dist2 <- rnorm(n/2, mu2, sd)
-    dist <- c(dist1, dist2)
+    pi = c(0.5, 0.5) # mixture proportions
+    mu = c(0.2, 0.8); sd = (0.2/1.645) # component means and SD for scale 0-1
+    # stochastic sampling from 2 Gaussians
+    components <- sample(1:2, size = n, replace = TRUE, prob = pi)
+    dist <- rnorm(n, mean = mu[components], sd = sd)
     # rescale to 0-1 without truncating
     dist <- (dist - min(dist)) / (max(dist) - min(dist)) * 0.99999 + 0.00001 
     dist <- ceiling(dist * c) # scale to c categories
@@ -131,12 +130,11 @@ for(n in N){
   for(c in C){
     set.seed(1)
     i = i+1
-    # means and SD for scale 0-1
-    mu1 = 0.15; mu2 = 0.85; sd = 0.2/1.645
-    # simulate and merge 2 Gaussians
-    dist1 <- rnorm(n*0.6, mu1, sd)
-    dist2 <- rnorm(n*0.4, mu2, sd)
-    dist <- c(dist1, dist2)
+    pi = c(0.6, 0.4) # mixture proportions
+    mu = c(0.15, 0.85); sd = (0.2/1.645) # component means and SD for scale 0-1
+    # stochastic sampling from 2 Gaussians
+    components <- sample(1:2, size = n, replace = TRUE, prob = pi)
+    dist <- rnorm(n, mean = mu[components], sd = sd)
     # rescale to 0-1 without truncating
     dist <- (dist - min(dist)) / (max(dist) - min(dist)) * 0.99999 + 0.00001 
     dist <- ceiling(dist * c) # scale to c categories
@@ -149,14 +147,13 @@ for(n in N){
 i = 64
 for(n in N){
   for(c in C){
-    set.seed(3)
+    set.seed(1)
     i = i+1
-    # means and SD for scale 0-1
-    mu1 = 0.15; mu2 = 0.9; sd = 0.2/1.645
-    # simulate and merge 2 Gaussians
-    dist1 <- rnorm(n*0.7, mu1, sd)
-    dist2 <- rnorm(n*0.3, mu2, sd)
-    dist <- c(dist1, dist2)
+    pi = c(0.7, 0.3) # mixture proportions
+    mu = c(0.15, 0.9); sd = (0.2/1.645) # component means and SD for scale 0-1
+    # stochastic sampling from 2 Gaussians
+    components <- sample(1:2, size = n, replace = TRUE, prob = pi)
+    dist <- rnorm(n, mean = mu[components], sd = sd)
     # rescale to 0-1 without truncating
     dist <- (dist - min(dist)) / (max(dist) - min(dist)) * 0.99999 + 0.00001 
     dist <- ceiling(dist * c) # scale to c categories
@@ -169,14 +166,13 @@ for(n in N){
 i = 72
 for(n in N){
   for(c in C){
-    set.seed(4)
+    set.seed(1)
     i = i+1
-    # means and SD for scale 0-1
-    mu1 = 0.15; mu2 = 0.85; sd = 0.2/1.645
-    # simulate and merge 2 Gaussians
-    dist1 <- rnorm(n*0.8, mu1, sd)
-    dist2 <- rnorm(n*0.2, mu2, sd)
-    dist <- c(dist1, dist2)
+    pi = c(0.8, 0.2) # mixture proportions
+    mu = c(0.15, 0.85); sd = (0.2/1.645) # component means and SD for scale 0-1
+    # stochastic sampling from 2 Gaussians
+    components <- sample(1:2, size = n, replace = TRUE, prob = pi)
+    dist <- rnorm(n, mean = mu[components], sd = sd)
     # rescale to 0-1 without truncating
     dist <- (dist - min(dist)) / (max(dist) - min(dist)) * 0.99999 + 0.00001 
     dist <- ceiling(dist * c) # scale to c categories
@@ -189,14 +185,13 @@ for(n in N){
 i = 80
 for(n in N){
   for(c in C){
-    set.seed(999)
+    set.seed(1)
     i = i+1
-    # means and SD for scale 0-1
-    mu1 = 0.15; mu2 = 0.95; sd = 0.2/1.645
-    # simulate and merge 2 Gaussians
-    dist1 <- rnorm(n*0.9, mu1, sd)
-    dist2 <- rnorm(n*0.1, mu2, sd)
-    dist <- c(dist1, dist2)
+    pi = c(0.8, 0.2) # mixture proportions
+    mu = c(0.15, 0.95); sd = (0.2/1.645) # component means and SD for scale 0-1
+    # stochastic sampling from 2 Gaussians
+    components <- sample(1:2, size = n, replace = TRUE, prob = pi)
+    dist <- rnorm(n, mean = mu[components], sd = sd)
     # rescale to 0-1 without truncating
     dist <- (dist - min(dist)) / (max(dist) - min(dist)) * 0.99999 + 0.00001 
     dist <- ceiling(dist * c) # scale to c categories
@@ -212,12 +207,11 @@ for(n in N){
   for(c in C){
     set.seed(1)
     i = i+1
-    # means and SD for scale 0-1
-    mu1 = 0.2; mu2 = 0.8; sd = 0.2/1.28
-    # simulate and merge 2 Gaussians
-    dist1 <- rnorm(n/2, mu1, sd)
-    dist2 <- rnorm(n/2, mu2, sd)
-    dist <- c(dist1, dist2)
+    pi = c(0.5, 0.5) # mixture proportions
+    mu = c(0.2, 0.8); sd = (0.2/1.645) # component means and SD for scale 0-1
+    # stochastic sampling from 2 Gaussians
+    components <- sample(1:2, size = n, replace = TRUE, prob = pi)
+    dist <- rnorm(n, mean = mu[components], sd = sd)
     # rescale without truncating
     dist <- (dist - min(dist)) / (max(dist) - min(dist)) * 0.99999 + 0.00001
     dist <- ceiling(dist * c)
@@ -242,7 +236,7 @@ for(n in N){
 }
 
 # add special cases
-# case 10 
+# valley
 i = 104
 for(n in N){
   for(c in C){
@@ -251,11 +245,11 @@ for(n in N){
     if(c == 5) prob=c(0.24, 0.24, 0.04, 0.24, 0.24) else prob=c(0.154, 0.154, 0.154, 0.03, 0.008, 0.008, 0.03, 0.154, 0.154, 0.154)
     dist <- rep(1:length(prob), times=prob*n)
     benchmark_distributions[[i]] <- factor(dist, levels=1:c)
-    names(benchmark_distributions)[i] <- paste0("Bimodal_Special_case_10_N_", n,"_C_",c) # TODO: change name?
+    names(benchmark_distributions)[i] <- paste0("Bimodal_Special_Valley_N_", n,"_C_",c) # TODO: change name?
   }
 }
 
-# case 11
+# small local mode
 i = 112
 for(n in N){
   for(c in C){
@@ -264,11 +258,11 @@ for(n in N){
     if(c == 5) prob=c(0.84, 0.03, 0.03, 0.03, 0.07) else prob=c(0.474, 0.474, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.02, 0.02)
     dist <- rep(1:length(prob), times=prob*n)
     benchmark_distributions[[i]] <- factor(dist, levels=1:c)
-    names(benchmark_distributions)[i] <- paste0("Bimodal_Special_case_11_N_", n,"_C_",c) # TODO: change name
+    names(benchmark_distributions)[i] <- paste0("Bimodal_Special_Small_Mode_N_", n,"_C_",c) 
   }
 }
 
-# case 11 different weights 
+# small local mode with stronger weight 
 i = 120
 for(n in N){
   for(c in C){
@@ -277,24 +271,25 @@ for(n in N){
     if(c == 5) prob=c(0.64, 0.03, 0.03, 0.03, 0.27) else prob=c(0.394, 0.394, 0.002, 0.002, 0.002, 0.002, 0.002, 0.002, 0.1, 0.1)
     dist <- rep(1:length(prob), times=prob*n)
     benchmark_distributions[[i]] <- factor(dist, levels=1:c)
-    names(benchmark_distributions)[i] <- paste0("Bimodal_Special_case 11_weighted_N_", n,"_C_",c) # TODO: change name
+    names(benchmark_distributions)[i] <- paste0("Bimodal_Special_Small_Mode_weighted_N_", n,"_C_",c) 
   }
 }
 
 # GENERATE TRIMODAL DISTRIBUTIONS --------------
+
 # mixture of 3 Gaussians (same weight)
 i = 128
 for(n in N){
   for(c in C){
-    set.seed(1234) 
+    set.seed(1) 
     i = i+1
-    # sample 3 neighboring Gaussians on scaled between 0 and 1
-    mu1 = 1/6; mu2 = 0.5; mu3 = 5/6
+    pi = c(1/3, 1/3, 1/3) # mixture proportions
+    mu = c(1/6, 0.5, 5/6) # component means
     sd = (1/6) / 3.719 # taken from rearranged z-value formula (99.9 percentile)
-    dist1 <- rnorm(n/3, mu1, sd)
-    dist2 <- rnorm(n/3, mu2, sd)
-    dist3 <- rnorm(n/3, mu3, sd)
-    dist <- c(dist1, dist2, dist3)
+    # stochastic sampling from 3 Gaussians
+    components <- sample(1:3, size = n, replace = TRUE, prob = pi)
+    dist <- rnorm(n, mean = mu[components], sd = sd)
+    # rescale to 0-1
     dist <- (dist - min(dist)) / (max(dist) - min(dist)) * 0.99999 + 0.00001
     dist <- ceiling(dist * c)
     benchmark_distributions[[i]] <- factor(dist, levels=1:c)
@@ -306,15 +301,15 @@ for(n in N){
 i = 136
 for(n in N){
   for(c in C){
-    set.seed(1234) 
+    set.seed(1) 
     i = i+1
-    # sample 3 neighboring Gaussians on scaled between 0 and 1
-    mu1 = 1/6; mu2 = 0.5; mu3 = 5/6
+    pi = c(0.2, 0.5, 0.3) # mixture proportions
+    mu = c(1/6, 0.5, 5/6) # component means
     sd = (1/6) / 3.719 # taken from rearranged z-value formula (99.9 percentile)
-    dist1 <- rnorm(n*0.2, mu1, sd)
-    dist2 <- rnorm(n*0.5, mu2, sd)
-    dist3 <- rnorm(n*0.3, mu3, sd)
-    dist <- c(dist1, dist2, dist3)
+    # stochastic sampling from 3 Gaussians
+    components <- sample(1:3, size = n, replace = TRUE, prob = pi)
+    dist <- rnorm(n, mean = mu[components], sd = sd)
+    # rescale to 0-1
     dist <- (dist - min(dist)) / (max(dist) - min(dist)) * 0.99999 + 0.00001
     dist <- ceiling(dist * c)
     benchmark_distributions[[i]] <- factor(dist, levels=1:c)
@@ -328,13 +323,13 @@ for(n in N){
   for(c in C){
     set.seed(1234) 
     i = i+1
-    # sample 3 neighboring Gaussians on scaled between 0 and 1
-    mu1 = 1/6; mu2 = 0.5; mu3 = 5/6
+    pi = c(0.5, 0.3, 0.2) # mixture proportions
+    mu = c(1/6, 0.5, 5/6) # component means
     sd = (1/6) / 3.719 # taken from rearranged z-value formula (99.9 percentile)
-    dist1 <- rnorm(n*0.5, mu1, sd)
-    dist2 <- rnorm(n*0.3, mu2, sd)
-    dist3 <- rnorm(n*0.2, mu3, sd)
-    dist <- c(dist1, dist2, dist3)
+    # stochastic sampling from 3 Gaussians
+    components <- sample(1:3, size = n, replace = TRUE, prob = pi)
+    dist <- rnorm(n, mean = mu[components], sd = sd)
+    # rescale to 0-1
     dist <- (dist - min(dist)) / (max(dist) - min(dist)) * 0.99999 + 0.00001
     dist <- ceiling(dist * c)
     benchmark_distributions[[i]] <- factor(dist, levels=1:c)
@@ -348,13 +343,13 @@ for(n in N){
   for(c in C){
     set.seed(1234) 
     i = i+1
-    # sample 3 neighboring Gaussians on scaled between 0 and 1
-    mu1 = 1/6; mu2 = 0.5; mu3 = 5/6
+    pi = c(0.3, 0.2, 0.5) # mixture proportions
+    mu = c(1/6, 0.5, 5/6) # component means
     sd = (1/6) / 3.719 # taken from rearranged z-value formula (99.9 percentile)
-    dist1 <- rnorm(n*0.3, mu1, sd)
-    dist2 <- rnorm(n*0.2, mu2, sd)
-    dist3 <- rnorm(n*0.5, mu3, sd)
-    dist <- c(dist1, dist2, dist3)
+    # stochastic sampling from 3 Gaussians
+    components <- sample(1:3, size = n, replace = TRUE, prob = pi)
+    dist <- rnorm(n, mean = mu[components], sd = sd)
+    # rescale to 0-1
     dist <- (dist - min(dist)) / (max(dist) - min(dist)) * 0.99999 + 0.00001
     dist <- ceiling(dist * c)
     benchmark_distributions[[i]] <- factor(dist, levels=1:c)
@@ -368,8 +363,14 @@ i = 160
 for(n in N){
   for(c in C){
     set.seed(1)
-    i=i+1
-    dist <- c(rbeta(n/3,50,50),rbeta(n/3,1,8),rbeta(n/3,8,1))
+    i = i+1
+    pi = c(1/3, 1/3, 1/3) # mixture proportions
+    shape1 = c(50, 1, 8) # beta dist. parameters of components
+    shape2 = c(50, 8, 1)
+    # stochastic sampling from 3 beta distributions
+    components <- sample(1:3, size=n, replace=TRUE, prob=pi)
+    dist <- rbeta(n, shape1[components], shape2[components])
+    # rescale to 0-1
     dist <- ceiling(dist*c)
     benchmark_distributions[[i]] <- factor(dist, levels=1:c)
     names(benchmark_distributions)[i] <- paste0("Trimodal_beta_mixtures_N_", n,"_C_",c)
@@ -390,12 +391,19 @@ for(n in N){
 }
 
 
-# save list 
-#saveRDS(benchmark_distributions, "benchmark_distributions/benchmark_distributions.RData")
+# save list as RData object
+#saveRDS(benchmark_distributions, "benchmark_distributions.RData")
 
+
+## save distributions as csv
+#benchmark_df <- sapply(benchmark_distributions, function(x) { # make equal length
+#  length(x) <- 275000 # max length  
+#  x
+#})
+#benchmark_df <- as.data.frame(benchmark_df) 
+#write.csv(benchmark_df, "benchmark_distributions.csv", row.names = FALSE)
 
 #-----------------------
-
 
 # Plot all distributions ---
 #pdf("benchmark_distributions/benchmark_distributions.pdf", width=12, height = 8)
@@ -405,18 +413,7 @@ for(n in N){
 #}
 #dev.off()
 
-## save as csv
-#benchmark_df <- sapply(benchmark_distributions, function(x) { # make equal length
-#  length(x) <- 275000 # max length  
-#  x
-#})
-#benchmark_df <- as.data.frame(benchmark_df) 
-#write.csv(benchmark_df, "benchmark_distributions/benchmark_distributions.csv", row.names = FALSE)
-
-# save as Rdata object
-#saveRDS(benchmark_distributions, "benchmark_distributions/benchmark_distributions.RData")
-
-# illustrate benchmark for paper--
+# illustrate certain samples for paper--
 #par(mfrow = c(3,3))
 #barplot(table(benchmark_distributions[[13]]), main = "Unimodal Gaussian")
 #barplot(table(benchmark_distributions[[22]]), main = "Unimodal Non-Gaussian")
