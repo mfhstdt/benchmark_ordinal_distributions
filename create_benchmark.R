@@ -1,10 +1,8 @@
 #### CREATE BENCHMARK OF CATEGORICAL DISTRIBUTIONS TO TEST METHODS AGAINST #########
 
 # CASES TO TEST ------------
-# N = 50, 500, 5000, 50000
-N <- c(50,500,5000,50000)
-# categories; C = 5, 10
-C <- c(5,10)
+N <- c(50,500,5000,50000) 
+C <- c(5,10) # number of categories
 
 # DISTRIBUTIONS TO TEST ---
 #
@@ -95,7 +93,7 @@ for(n in N){
     set.seed(1)
     i=i+1
     if(c == 5) prob <- seq(0.1, 0.3, by = 0.05) else prob <- (seq(1, 10, by = 1) / 55)
-    dist <- rep(1:length(prob), times=prob*n)
+    dist <- rep(1:length(prob), times=prob*n) 
     dist <- factor(dist, levels=1:c)
     benchmark_distributions[[i]] <- dist
     names(benchmark_distributions)[i] <- paste0("Unimodal_Special_Staircase_N_", n,"_C_",c) # TODO: change name
@@ -120,7 +118,7 @@ for(n in N){
     dist <- (dist - min(dist)) / (max(dist) - min(dist)) * 0.99999 + 0.00001 
     dist <- ceiling(dist * c) # scale to c categories
     benchmark_distributions[[i]] <- factor(dist, levels=1:c)
-    names(benchmark_distributions)[i] <- paste0("Bimodal_Gaussians_small_overlap_N_", n,"_C_",c)
+    names(benchmark_distributions)[i] <- paste0("Bimodal_Gaussians_weight50,50_N_", n,"_C_",c)
   }
 }
 
@@ -221,7 +219,7 @@ for(n in N){
 }
 
 
-# simulate from bimodal beta(0.5, 0.5) 
+# simulate from beta(0.5, 0.5) 
 i = 96
 for(n in N){  
   for(c in C){
@@ -390,7 +388,6 @@ for(n in N){
   names(benchmark_distributions)[i] <- paste0("Claw_N_", n)
 }
 
-benchmark_distributions = 
 # save list as RData object
 #saveRDS(benchmark_distributions, "benchmark_distributions.RData")
 
