@@ -96,7 +96,7 @@ for(n in N){
     dist <- rep(1:length(prob), times=prob*n) 
     dist <- factor(dist, levels=1:c)
     benchmark_distributions[[i]] <- dist
-    names(benchmark_distributions)[i] <- paste0("Unimodal_Special_Staircase_N_", n,"_C_",c) # TODO: change name
+    names(benchmark_distributions)[i] <- paste0("Unimodal_Special_Staircase_N_", n,"_C_",c) 
   }
 }
 
@@ -243,7 +243,7 @@ for(n in N){
     if(c == 5) prob=c(0.24, 0.24, 0.04, 0.24, 0.24) else prob=c(0.154, 0.154, 0.154, 0.03, 0.008, 0.008, 0.03, 0.154, 0.154, 0.154)
     dist <- rep(1:length(prob), times=prob*n)
     benchmark_distributions[[i]] <- factor(dist, levels=1:c)
-    names(benchmark_distributions)[i] <- paste0("Bimodal_Special_Valley_N_", n,"_C_",c) # TODO: change name?
+    names(benchmark_distributions)[i] <- paste0("Bimodal_Special_Valley_N_", n,"_C_",c) 
   }
 }
 
