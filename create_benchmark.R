@@ -206,7 +206,7 @@ for(n in N){
     set.seed(1)
     i = i+1
     pi = c(0.5, 0.5) # mixture proportions
-    mu = c(0.2, 0.8); sd = (0.2/1.645) # component means and SD for scale 0-1
+    mu = c(0.25, 0.7); sd = (0.2/1.645) # component means and SD for scale 0-1
     # stochastic sampling from 2 Gaussians
     components <- sample(1:2, size = n, replace = TRUE, prob = pi)
     dist <- rnorm(n, mean = mu[components], sd = sd)
@@ -389,26 +389,26 @@ for(n in N){
 }
 
 # save list as RData object
-#saveRDS(benchmark_distributions, "benchmark_distributions.RData")
+saveRDS(benchmark_distributions, "benchmark_distributions.RData")
 
 
 ## save distributions as csv
-#benchmark_df <- sapply(benchmark_distributions, function(x) { # make equal length
-#  length(x) <- 275000 # max length  
-#  x
-#})
-#benchmark_df <- as.data.frame(benchmark_df) 
-#write.csv(benchmark_df, "benchmark_distributions.csv", row.names = FALSE)
+benchmark_df <- sapply(benchmark_distributions, function(x) { # make equal length
+  length(x) <- 275000 # max length  
+  x
+})
+benchmark_df <- as.data.frame(benchmark_df) 
+write.csv(benchmark_df, "benchmark_distributions.csv", row.names = FALSE)
 
 #-----------------------
 
 # Plot all distributions ---
-#pdf("benchmark_distributions.pdf", width=12, height = 8)
-#par(mfrow=c(2,4))
-#for(n in 1:length(benchmark_distributions)){
-#  barplot(table(benchmark_distributions[[n]]), main = names(benchmark_distributions)[n], cex.main=1)
-#}
-#dev.off()
+pdf("benchmark_distributions.pdf", width=12, height = 8)
+par(mfrow=c(2,4))
+for(n in 1:length(benchmark_distributions)){
+  barplot(table(benchmark_distributions[[n]]), main = names(benchmark_distributions)[n], cex.main=1)
+}
+dev.off()
 
 # illustrate certain samples for paper--
 #par(mfrow = c(3,3))
